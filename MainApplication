@@ -1,0 +1,26 @@
+package edu.tridenttech.cpt237.roeske.recipe;
+/**
+ * Recipe Conversion converts foreign measurements to normal American measurements
+ * Start date February 21, 2020
+ * 
+ * @author Rachel D Roeske
+*/
+import edu.tridenttech.cpt237.roeske.recipe.view.StartWindow;
+import javafx.application.Application;
+import javafx.stage.Stage;
+
+public class MainApplication extends Application
+{
+	@Override
+	public void start(Stage primaryStage) throws Exception
+	{
+		StartWindow window = new StartWindow();
+		window.show();
+	}//END OF Method
+	
+	public static void main(String[] args)
+	{
+		Application.launch(args);
+
+	}//END OF Method
+}//END OF Class

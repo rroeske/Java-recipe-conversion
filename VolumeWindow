@@ -1,0 +1,250 @@
+package edu.tridenttech.cpt237.roeske.recipe.view;
+
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import edu.tridenttech.cpt237.roeske.recipe.model.Volume;
+import edu.tridenttech.cpt237.roeske.recipe.model.Writer;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+import javafx.util.Callback;
+
+/**
+ * VolumeWindow UI for volume measurements
+ * Connects to Volume model class and Writer model class
+ *
+ */
+public class VolumeWindow 
+{
+	public String from;
+	public String to;
+	public String itemType;
+	public double rate;
+	private Stage stage;
+	
+	private Label quantLabel = new Label("Enter item quantity in grams:");
+	private TextField itemQuantity = new TextField();
+	private RadioButton brownsugarButton = new RadioButton("Brown Sugar Grams to Cups");
+	private RadioButton butterButton = new RadioButton("Butter Grams to Tablespoons");
+	private RadioButton flourButton = new RadioButton("Flour Grams to Cups");
+	private RadioButton sugarButton = new RadioButton("Sugar Grams to Cups");
+	private Button enterButton = new Button("Enter");
+	private Button closeButton = new Button("Close");
+	private ToggleGroup radioGroup = new ToggleGroup();
+	private TableView<Volume> table = new TableView<>();
+	
+	/**
+	 * Constructor
+	 */
+	public VolumeWindow()
+	{
+		/**
+		 * Sets radio buttons
+		 */
+		flourButton.setToggleGroup(radioGroup);
+		sugarButton.setToggleGroup(radioGroup);
+		brownsugarButton.setToggleGroup(radioGroup);
+		butterButton.setToggleGroup(radioGroup);
+		
+		/**
+		 * Set up TableView
+		 */
+		TableColumn<Volume, String> nameCol = new TableColumn<>("Item Type");
+		nameCol.setCellValueFactory(new PropertyValueFactory<>("itemType"));
+		TableColumn<Volume, String> fromCol = new TableColumn<>("From");
+		fromCol.setCellValueFactory(new PropertyValueFactory<>("fromType"));
+		TableColumn<Volume, String> toCol = new TableColumn<>("To");
+		toCol.setCellValueFactory(new PropertyValueFactory<>("toType"));
+		TableColumn<Volume, Double> amountCol = new TableColumn<>("End Amount");
+		amountCol.setCellValueFactory(new PropertyValueFactory<>("amount"));
+		TableColumn<Volume, Double> quantCol = new TableColumn<>("Original Amount");
+		quantCol.setCellValueFactory(new PropertyValueFactory<>("quantity"));
+		nameCol.setMinWidth(110);
+		fromCol.setMinWidth(110);
+		quantCol.setMinWidth(110);
+		toCol.setMinWidth(110);
+		amountCol.setMinWidth(110);
+		/**
+		 * Formats table cell to 2-decimal doubles
+		 */
+		amountCol.setCellFactory(new Callback<TableColumn<Volume, Double>, TableCell<Volume, Double>>() {
+			public TableCell<Volume, Double> call(TableColumn<Volume, Double> p) {
+				TableCell<Volume, Double> cell = new TableCell<Volume, Double>(){
+					@Override
+					public void updateItem(Double item, boolean empty)
+					{
+						super.updateItem(item, empty);
+						setText(empty ? null : getString());
+						setGraphic(null);
+					}//END OF Method
+					private String getString()
+					{
+						String str = "";
+						if(getItem() != null)
+						{
+							String getitem = getItem().toString();
+							NumberFormat decimal = DecimalFormat.getInstance();
+							decimal.setMinimumFractionDigits(2);
+							decimal.setMaximumFractionDigits(2);
+							decimal.setRoundingMode(RoundingMode.UP);
+							str = decimal.format(Double.parseDouble(getitem));
+						}
+						else
+						{
+							str = "0.00";
+						}//END OF if/else
+						return str;
+					}//END OF Method
+				};
+			return cell;
+			}
+		});//END OF Inner Class
+		quantCol.setCellFactory(new Callback<TableColumn<Volume, Double>, TableCell<Volume, Double>>() {
+			public TableCell<Volume, Double> call(TableColumn<Volume, Double> p) {
+				TableCell<Volume, Double> cell = new TableCell<Volume, Double>(){
+					@Override
+					public void updateItem(Double item, boolean empty)
+					{
+						super.updateItem(item, empty);
+						setText(empty ? null : getString());
+						setGraphic(null);
+					}//END OF Method
+					private String getString()
+					{
+						String str = "";
+						if(getItem() != null)
+						{
+							String getitem = getItem().toString();
+							NumberFormat decimal = DecimalFormat.getInstance();
+							decimal.setMinimumFractionDigits(2);
+							decimal.setMaximumFractionDigits(2);
+							decimal.setRoundingMode(RoundingMode.UP);
+							str = decimal.format(Double.parseDouble(getitem));
+						}
+						else
+						{
+							str = "0.00";
+						}//END OF if/else
+						return str;
+					}//END OF Method
+				};
+			return cell;
+			}
+		});//END OF Inner Class
+		table.getColumns().add(nameCol);
+		table.getColumns().add(fromCol);
+		table.getColumns().add(quantCol);
+		table.getColumns().add(toCol);
+		table.getColumns().add(amountCol);
+		
+		/**
+		 * Sets up stage
+		 */
+		stage = new Stage();
+		VBox vbox = new VBox(10, flourButton, sugarButton, brownsugarButton, butterButton, quantLabel, itemQuantity, enterButton, table, closeButton);
+		Scene scene = new Scene(vbox);
+		stage.setScene(scene);
+		stage.setWidth(570);
+		stage.setTitle("Volume Measurements");
+	}//END OF Constructor
+	
+	/**
+	 * 	 * Show method
+	 * Loads Items, inner classes handle buttons
+	 * Catches NumberFormatExceptions
+	 * Alerts to null or invalid values
+	 * Calls item.convert
+	 * Writes file
+	 */
+	public void show()
+	{
+		Volume volume = new Volume(itemType, from, rate, to);
+		Writer writer = new Writer();
+		volume.loadItems();
+
+		stage.show();
+		
+		enterButton.setOnAction(new EventHandler<ActionEvent>()
+		{
+			@Override
+			public void handle(ActionEvent event)
+			{
+				try
+				{
+					volume.setQuantity(Double.parseDouble(itemQuantity.getText()));
+				}//END OF try
+				catch(NumberFormatException e)
+				{
+					Alert alert = new Alert(AlertType.WARNING);
+					alert.setContentText("Quantity must be numeric value");
+					alert.show();
+				}//END OF catch
+				if(flourButton.isSelected() == true)
+				{
+					volume.convert("flour");
+				}
+				else if(sugarButton.isSelected() == true)
+				{
+					volume.convert("sugar");
+				}
+				else if(brownsugarButton.isSelected() == true)
+				{
+					volume.convert("brownsugar");
+				}
+				else if(butterButton.isSelected() == true)
+				{
+					volume.convert("butter");
+				}
+				else
+				{
+					Alert alert = new Alert(AlertType.WARNING);
+					alert.setContentText("You must select a conversion");
+					alert.show();
+				}//END OF if/else
+				try
+				{
+					if(Double.parseDouble(itemQuantity.getText()) <= 0)
+					{
+						Alert alert = new Alert(AlertType.WARNING);
+						alert.setContentText("Amount must be greater than 0");
+						alert.show();
+					}
+					else
+					{
+						table.getItems().add(new Volume(volume.getItemType(), volume.getFromType(), volume.getQuantity(), volume.getToType(), volume.getAmount()));
+						writer.setWriteRecipe(volume.getItemType(), volume.getFromType(), volume.getQuantity(), volume.getToType(), volume.getAmount());
+						itemQuantity.clear();
+					}//END OF if/else
+				}//END OF try
+				catch(NumberFormatException e)
+				{
+					System.err.println("non-numeric");
+				}//END OF catch
+			}//END OF Method
+			
+		});//END OF Inner Class
+		
+		closeButton.setOnAction(new EventHandler<ActionEvent>()
+		{
+			@Override
+			public void handle(ActionEvent event)
+			{
+				stage.close();
+			}//END OF Method
+		});//END OF Inner Class
+	}//END OF Method
+}//END OF Class

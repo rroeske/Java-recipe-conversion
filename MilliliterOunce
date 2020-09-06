@@ -1,0 +1,49 @@
+package edu.tridenttech.cpt237.roeske.recipe.model;
+
+/**
+ * Class to convert milliliters to liquid ounces
+ * Extends Item class
+ *
+ */
+public class MilliliterOunce extends Item
+{
+	private double moAmount = 0.0;
+	private double conversionRate = 0.0;
+	private String from;
+	private String to;
+	
+	/**
+	 * Constructor
+	 * @param from - initial measurement
+	 * @param conversionRate - conversion rate
+	 * @param to - end measurement
+	 */
+	public MilliliterOunce(String from, double conversionRate, String to)
+	{
+		super(from, conversionRate, to);
+		this.conversionRate = conversionRate;
+		this.from = from;
+		this.to = to;	
+	}//END OF Constructor
+	
+	/**
+	 * Method calculates conversion with conversionRate and user input quantity
+	 * @param quantity
+	 * @return moAmount
+	 */
+	public double getAmount(double quantity)
+	{
+		moAmount = quantity * conversionRate;
+		return moAmount;
+	}//END OF Method
+	
+	public String getFrom()
+	{
+		return from;
+	}//END OF Method
+	
+	public String getTo()
+	{
+		return to;
+	}//END OF Method
+}//END OF Class

@@ -1,0 +1,56 @@
+package edu.tridenttech.cpt237.roeske.recipe.model;
+
+/**
+ * Class to convert grams of flour to cups of flour
+ * Extends Volume class
+ */
+public class Flour extends Volume
+{
+	private double flAmount = 0.0;
+	private double conversion = 0.0;
+	private String from;
+	private String to;
+	private String item;
+	
+	/**
+	 * Constructor
+	 * @param item - type of item
+	 * @param from - initial measurement
+	 * @param conversion - conversion rate
+	 * @param to - end measurement
+	 */
+	public Flour(String item, String from, double conversion, String to)
+	{
+		super(item, from, conversion, to);
+		this.conversion = conversion;
+		this.from = from;
+		this.to = to;
+		this.item = item;
+	}//END OF Constructor
+	
+	/**
+	 * Method calculates final amount off user input quantity and conversion rate and returns
+	 * @param quantity
+	 * @return flAmount
+	 */
+	public double getAmount(double quantity)
+	{
+		flAmount = quantity * conversion;
+		return flAmount;
+	}//END OF Method
+	
+	public String getFrom()
+	{
+		return from;
+	}//END OF Method
+	
+	public String getTo()
+	{
+		return to;
+	}//END OF Method
+	
+	public String getItem()
+	{
+		return item;
+	}//END OF Method
+}//END OF Class

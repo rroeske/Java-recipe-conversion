@@ -1,0 +1,32 @@
+package edu.tridenttech.cpt237.roeske.recipe.model;
+
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+
+/**
+ * Writer class writes created data to file, later loaded back into program
+ * as a whole recipe
+ *
+ */
+
+public class Writer 
+{
+	private final String MASTER_FILE_NAME = "myRecipe.txt";
+
+	
+	//Writer Method
+	public void setWriteRecipe(String name, String from, double quantity, String to, double amount)
+	{
+		try
+		{
+			PrintWriter filePW = new PrintWriter(new FileWriter(MASTER_FILE_NAME, true));
+			filePW.printf("%s\t%s\t%.2f\t%s\t%.2f\r\n", name, from, quantity, to, amount);
+			filePW.close();
+		}//END OF try
+		catch(IOException ex)
+		{
+			System.err.println("File not written");
+		}//END OF catch
+	}//END OF Method
+}//END OF Class

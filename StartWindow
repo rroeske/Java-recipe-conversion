@@ -1,0 +1,88 @@
+package edu.tridenttech.cpt237.roeske.recipe.view;
+
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.stage.Stage;
+
+/**
+ * StartWindow for UI
+ * Implements EventHandler, ActionEvent
+ *
+ */
+public class StartWindow implements EventHandler<ActionEvent>
+{
+	private Stage stage;
+
+	VolumeWindow vwindow = new VolumeWindow();
+	ItemWindow iwindow = new ItemWindow();
+	RecipeWindow rwindow = new RecipeWindow();
+	Button itemButton = new Button("Item Measurements");
+	Button volumeButton = new Button("Volume Measurements");
+	Label label = new Label("Please choose a measurement:");
+	Button closeButton = new Button("Close");
+	Button recipeButton = new Button("Load Recipe");
+	
+	/**
+	 * Constructor sets stage and buttons
+	 */
+	public StartWindow()
+	{
+		stage = new Stage();
+		HBox hbox = new HBox(10, itemButton, volumeButton, recipeButton, closeButton);
+		BorderPane pane = new BorderPane();
+		pane.setCenter(label);
+		pane.setBottom(hbox);
+		Scene scene = new Scene(pane);
+		stage.setScene(scene);
+		itemButton.setOnAction(this);
+		volumeButton.setOnAction(this);
+		closeButton.setOnAction(this);
+		recipeButton.setOnAction(this);
+	}//END OF Constructor
+	
+	/**
+	 * Show method just shows stage
+	 */
+	public void show()
+	{
+		stage.setTitle("Recipe Measurement Conversions");
+		stage.show();
+	}//END OF Method
+	
+	/**
+	 * Handle Method handles action event for buttons
+	 * Information alert on closing window
+	 */
+	public void handle(ActionEvent event)
+	{
+		Button button = (Button)event.getSource();
+		
+		if(button == itemButton)
+		{
+			iwindow.show();
+		}
+		else if(button == volumeButton)
+		{
+			vwindow.show();
+		}
+		else if(button == recipeButton)
+		{
+			rwindow.show();
+		}
+		else
+		{
+			Alert alert = new Alert(AlertType.INFORMATION);
+			alert.setContentText("Don't forget your written file!");
+			alert.show();
+			
+			stage.close();
+		}//END OF if/else
+	}//END OF Method
+}//END OF Class

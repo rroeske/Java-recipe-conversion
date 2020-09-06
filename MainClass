@@ -1,0 +1,219 @@
+package edu.tridenttech.cpt237.roeske.recipe;
+/**
+ * MAIN CLASS runs program without user interface
+ */
+import java.util.ArrayList;
+import java.util.Scanner;
+
+import edu.tridenttech.cpt237.roeske.recipe.model.Item;
+import edu.tridenttech.cpt237.roeske.recipe.model.ReportRecipe;
+import edu.tridenttech.cpt237.roeske.recipe.model.Volume;
+import edu.tridenttech.cpt237.roeske.recipe.model.Writer;
+
+public class MainClass {
+	public static final String[] MENU_OPTIONS = {"Convert mL to Ounce", 
+			"Convert Gram to Ounce", 
+			"Convert Celsius to Fahrenheit", 
+			"Convert Kilogram to Pound",
+			"Convert Centimeter to Inch",
+			"Convert Grams of Flour to Cups of Flour", 
+			"Convert Grams of Sugar to Cups of Sugar", 
+			"Convert Grams of Brown Sugar to Cups of Brown Sugar",
+			"Convert Grams of Butter to Tablespoons of Butter",
+			"Quit"};
+	
+	public static double amount;
+	public static double quantity;
+	public static String from;
+	public static String to;
+	public static String itemName;
+	public static double rate;
+	public static ArrayList<ReportRecipe> thisList = new ArrayList<>();
+	
+/**
+ * Main Method
+ * @param args
+ */
+	public static void main(String[] args)
+	{
+		Scanner input = new Scanner(System.in);
+		Writer writer = new Writer();
+
+		char menuSelection = ' ';
+		Item item = new Item(itemName, from, quantity, to, amount);
+		Volume volume = new Volume(itemName, from, rate, to);
+		item.loadItems();
+		volume.loadItems();
+		System.out.println("Welcome!");
+		menuSelection = validateMainMenu(input);
+		
+
+		
+		while(menuSelection != 'Q')
+		{
+
+
+			itemName = getItem(input);
+			quantity = validateQuantity(input);
+			if(menuSelection == 'A')//milliliter
+			{
+				item.setQuantity(quantity);
+				item.convert("milliliters");
+				from = item.getFromType();
+				to = item.getToType();
+				amount = item.getAmount();
+			}
+			else if(menuSelection == 'B')//gram
+			{
+				item.setQuantity(quantity);
+				item.convert("grams");
+				from = item.getFromType();
+				to = item.getToType();
+				amount = item.getAmount();
+				
+			}
+			else if(menuSelection == 'C')//celsius
+			{
+				item.setQuantity(quantity);
+				item.convert("celsius");
+				from = item.getFromType();
+				to = item.getToType();
+				amount = item.getAmount();
+			}
+			else if(menuSelection == 'D')//kilogram
+			{
+				item.setQuantity(quantity);
+				item.convert("kilograms");
+				from = item.getFromType();
+				to = item.getToType();
+				amount = item.getAmount();
+			}
+			else if(menuSelection == 'E')//centimeter
+			{
+				item.setQuantity(quantity);
+				item.convert("centimeters");
+				from = item.getFromType();
+				to = item.getToType();
+				amount = item.getAmount();
+			}
+			else if(menuSelection == 'F')//flour
+			{
+				volume.setQuantity(quantity);
+				volume.convert("flour");
+				from = volume.getFromType();
+				to = volume.getToType();
+				amount = volume.getAmount();
+				itemName = volume.getItemType();
+			}
+			else if(menuSelection == 'G')//sugar
+			{
+				volume.setQuantity(quantity);
+				volume.convert("sugar");
+				from = volume.getFromType();
+				to = volume.getToType();
+				amount = volume.getAmount();
+				itemName = volume.getItemType();
+			}
+			else if(menuSelection == 'H')//brown sugar
+			{
+				volume.setQuantity(quantity);
+				volume.convert("brownsugar");
+				from = volume.getFromType();
+				to = volume.getToType();
+				amount = volume.getAmount();
+				itemName = volume.getItemType();
+				
+			}
+			else//butter
+			{
+				volume.setQuantity(quantity);
+				volume.convert("butter");
+				from = volume.getFromType();
+				to = volume.getToType();
+				amount = volume.getAmount();
+				itemName = volume.getItemType();
+			}//END OF if/else
+			System.out.printf("%-15s%-15s%-15s%-15s%-15s\n", "Item", "From", "Quantity", "To", "Converted Amount");
+			System.out.println("------------------------------------------------------------------------------");
+			System.out.printf("%-15s%-15s%-15.2f%-15s%-15.2f\n", itemName, from, quantity, to, amount);
+			writer.setWriteRecipe(itemName, from, quantity, to, amount);
+			
+			menuSelection = validateMainMenu(input);
+		}//END OF loop
+		ReportRecipe recipe = new ReportRecipe(itemName, from, quantity, to, amount);
+		recipe.loadItems();
+		System.out.printf("%-15s%-15s%-15s%-15s%-15s\n", "Item", "From", "Quantity", "To", "Converted Amount");
+		System.out.println("------------------------------------------------------------------------------");
+		for(int i = 0; i < recipe.getList().size(); i++)
+		{	
+			System.out.printf("%-15s%-15s%-15.2f%-15s%-15.2f\n",recipe.getList().get(i).getName(), recipe.getList().get(i).getFrom(), recipe.getList().get(i).getQuantity(), recipe.getList().get(i).getTo(), recipe.getList().get(i).getAmount());
+		}//END OF loop
+		System.out.println("Don't forget your written file!");
+		System.out.println("Goodbye!");
+	}//END OF Method
+	
+	public static void displayMainMenu()
+	{
+		System.out.println("\n--------------------------------------------");
+		System.out.println("MAIN MENU");
+		System.out.println("--------------------------------------------");
+		System.out.printf("%-5s%-20s\n", "[A]", MENU_OPTIONS[0]);
+		System.out.printf("%-5s%-20s\n", "[B]", MENU_OPTIONS[1]);
+		System.out.printf("%-5s%-20s\n", "[C]", MENU_OPTIONS[2]);
+		System.out.printf("%-5s%-20s\n", "[D]", MENU_OPTIONS[3]);
+		System.out.printf("%-5s%-20s\n", "[E]", MENU_OPTIONS[4]);
+		System.out.printf("%-5s%-20s\n", "[F]", MENU_OPTIONS[5]);
+		System.out.printf("%-5s%-20s\n", "[G]", MENU_OPTIONS[6]);
+		System.out.printf("%-5s%-20s\n", "[H]", MENU_OPTIONS[7]);
+		System.out.printf("%-5s%-20s\n", "[I]", MENU_OPTIONS[8]);
+		System.out.printf("%-5s%-20s\n", "[Q]", MENU_OPTIONS[9]);
+	}//END OF Method
+	
+	public static char validateMainMenu(Scanner borrowedInput)
+	{
+		char localMenuSelection;
+		
+		System.out.println("\nPlease select from the following menu.");
+		System.out.println("You may choose quit to leave the program.");
+		displayMainMenu();
+		System.out.print("Enter the letter of your selection here:");
+		localMenuSelection = borrowedInput.next().toUpperCase().charAt(0);
+		while(localMenuSelection != 'A' && localMenuSelection != 'B' && localMenuSelection != 'C' && localMenuSelection != 'D' && localMenuSelection != 'E' && localMenuSelection != 'F' && localMenuSelection != 'G'&& localMenuSelection != 'H' && localMenuSelection != 'I' && localMenuSelection != 'Q')
+		{
+			System.out.println("\nThat is an invalid answer.  Please select again.");
+			System.out.println("\nPlease select from the following menu.");
+			System.out.println("You may choose quit to leave the program.");
+			displayMainMenu();
+			System.out.print("Enter the letter of your selection here:");
+			localMenuSelection = borrowedInput.next().toUpperCase().charAt(0);
+		}//END OF loop
+		return localMenuSelection;		
+	}//END OF Method
+	
+	public static double validateQuantity(Scanner borrowedInput)
+	{
+		double localQuantity;
+		
+		System.out.println("\nPlease enter your quantity:");
+		localQuantity = borrowedInput.nextDouble();
+		while(localQuantity <= 0)
+		{
+			System.out.println("\nThat is an invalid answer.");
+			System.out.println("You must have more than zero.");
+			System.out.println("\nPlease enter your quantity:");
+			localQuantity = borrowedInput.nextDouble();
+		}//END OF loop
+		return localQuantity;
+	}//END OF Method
+	
+	public static String getItem(Scanner borrowedInput)
+	{
+		String localItem;
+		
+		System.out.println("\nPlease enter the name of your item:");
+		localItem = borrowedInput.next();
+		borrowedInput.nextLine();
+		return localItem;
+	}//END OF Method
+
+}//END OF Class

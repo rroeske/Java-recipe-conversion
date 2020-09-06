@@ -1,0 +1,50 @@
+package edu.tridenttech.cpt237.roeske.recipe.model;
+
+/**
+ * Class to convert kilograms to pounds
+ * Extends Item class
+ */
+public class KilogramPound extends Item
+{
+	private final double OZ_LB = 16.0;
+	private double kpAmount = 0.0;
+	private double conversionRate = 0.0;
+	private String from;
+	private String to;
+
+	/**
+	 * Constructor
+	 * @param from - initial measurement
+	 * @param conversionRate - conversion rate
+	 * @param to - end measurement
+	 */
+	public KilogramPound(String from, double conversionRate, String to)
+	{
+		super(from, conversionRate, to);
+		this.conversionRate = conversionRate;
+		this.from = from;
+		this.to = to;
+	}//END OF Constructor
+	
+	/**
+	 * Method calculates conversion with conversion rate and user input quantity
+	 * Requires constant for oz per pound.  First converts kilograms to ounces then pounds
+	 * @param quantity
+	 * @return kpAmount
+	 */
+	public double getAmount(double quantity)
+	{
+		kpAmount = (quantity * conversionRate)/OZ_LB;
+		return kpAmount;
+	}//END OF Method
+	
+	public String getFrom()
+	{
+		return from;
+	}//END OF Method
+	
+	public String getTo()
+	{
+		return to;
+	}//END OF Method
+}//END OF Class

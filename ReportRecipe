@@ -1,0 +1,114 @@
+package edu.tridenttech.cpt237.roeske.recipe.model;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Scanner;
+
+/**
+ * Report Recipe class uploads the saved recipe file and re-enters it into the program
+ *
+ */
+public class ReportRecipe
+{
+	private final String MASTERFILE = "myRecipe.txt";
+	private String name;
+	private String from;
+	private String to;
+	private double quantity;
+	private double amount;
+
+	/**ArrayList holds file data as class object
+	 * 
+	 */
+	ArrayList<ReportRecipe> recipeList = new ArrayList<>();
+	
+	/**
+	 * Constructor
+	 * @param name
+	 * @param from
+	 * @param quantity
+	 * @param to
+	 * @param amount
+	 */
+	public ReportRecipe(String name, String from, double quantity, String to, double amount)
+	{
+		this.name = name;
+		this.from = from;
+		this.to = to;
+		this.quantity = quantity;
+		this.amount = amount;
+	}//END OF Constructor
+	
+	/**
+	 * Loads items from saved recipe file
+	 * Catches errors NumberFormatException, ArrayIndexOutOfBoundsException, and IOException
+	 */
+	public void loadItems()
+	{
+		int lineCount = 0;
+		try
+		{
+			Scanner infile = new Scanner(new FileInputStream(MASTERFILE));
+
+			
+			while(infile.hasNext() == true)
+			{			
+				String line = infile.nextLine();
+				String[] list = line.split("\t");
+				try
+				{
+					lineCount++;
+
+					recipeList.add(new ReportRecipe(list[0], list[1], Double.parseDouble(list[2]), list[3], Double.parseDouble(list[4])));
+
+
+				}//END OF try
+				catch(NumberFormatException e)
+				{
+					System.err.printf("%s %d %s %s\n", "Invalid line. Line:", lineCount, "Text:", line);
+				}//END OF catch		
+				catch(ArrayIndexOutOfBoundsException e)
+				{
+					System.err.printf("%s %d %s %s\n", "Invalid line. Line:", lineCount, "Text:", line);
+				}//END OF catch
+			}//END OF loop
+			infile.close();
+		}//END OF try
+		catch(IOException ex)
+		{
+			System.err.println("File not found");
+		}//END OF catch
+	}//END OF Method
+	
+	
+	public ArrayList<ReportRecipe> getList()
+	{
+		return recipeList;
+	}//END OF Method
+	
+	public String getName()
+	{
+		return name;
+	}//END OF Method
+	
+	public String getFrom()
+	{
+		return from;
+	}//END OF Method
+	
+	public String getTo()
+	{
+		return to;
+	}//END OF Method
+	
+	public double getQuantity()
+	{
+		return quantity;
+	}//END OF Method
+	
+	public double getAmount()
+	{
+		return amount;
+	}//END OF Method
+}//END OF Class

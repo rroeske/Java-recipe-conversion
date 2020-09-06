@@ -1,0 +1,242 @@
+package edu.tridenttech.cpt237.roeske.recipe.model;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Scanner;
+
+
+
+/**
+ * Item class processes all conversions for regular item measurements
+ *
+ */
+public class Item implements Conversion, Comparable<Item>
+{
+	private final String MASTERFILE = "ItemConversionRate.txt";
+
+	protected double quantity;
+	protected double amount;
+	protected String toType;
+	protected String fromType;
+	protected double rate;
+	protected String itemType;
+	
+	/**
+	 * ArrayList holds data from file as subclass objects
+	 */
+	ArrayList<Item> items = new ArrayList<>();
+	
+	/**
+	 * Constructor for TableView object
+	 * @param item
+	 * @param from
+	 * @param quantity
+	 * @param to
+	 * @param amount
+	 */
+	public Item(String item, String from, double quantity, String to, double amount)
+	{
+		this.itemType = item;
+		this.toType = to;
+		this.fromType = from;
+		this.amount = amount;
+		this.quantity = quantity;
+	}//END OF Constructor
+	
+	/**
+	 * Constructor
+	 * @param from
+	 * @param rate
+	 * @param to
+	 */
+	public Item(String from, double rate, String to)
+	{
+		this.toType = to;
+		this.fromType = from;
+		this.rate = rate;
+	}//END OF Constructor
+	
+	public void setName(String itemName)
+	{
+		this.itemType = itemName;
+	}//END OF Method
+	
+	public void setQuantity(double quantity)
+	{
+		this.quantity = quantity;
+	}//END OF Method
+	
+	/**
+	 * Compare to method sorts list alphabetically so it can be pulled from
+	 */
+    @Override
+    public int compareTo(Item compareItem)
+    {
+    	if(this.fromType.compareTo(compareItem.fromType) == 0)
+    	{
+    		return 0;
+    	}
+    	else if(this.fromType.compareTo(compareItem.fromType) < 0)
+    	{
+    		return -1;
+    	}
+    	else
+    	{
+    		return 1;
+    	}//END OF if/else
+
+    }//END OF Method
+	
+	/**
+     * Convert method processes conversion based on conversion from type
+     * Sends data to child classes to calculate conversion and brings data back
+	 */
+	public void convert(String type)
+	{
+		if(type.equals("celsius"))
+		{
+			int index = 0;
+			CelsiusFahrenheit cf = new CelsiusFahrenheit(items.get(index).getFromType(), items.get(index).getRate(), items.get(index).getToType());
+			amount = cf.getAmount(quantity);
+			toType = cf.getTo();
+			fromType = cf.getFrom();
+		}
+		else if(type.equals("centimeters"))
+		{
+			int index = 1;
+			CentimeterInch ci = new CentimeterInch(items.get(index).getFromType(), items.get(index).getRate(), items.get(index).getToType());
+			amount = ci.getAmount(quantity);
+			toType = ci.getTo();
+			fromType = ci.getFrom();
+		}
+		else if(type.equals("grams"))
+		{
+			int index = 2;
+			GramOunce go = new GramOunce(items.get(index).getFromType(), items.get(index).getRate(), items.get(index).getToType());
+			amount = go.getAmount(quantity);
+			toType = go.getTo();
+			fromType = go.getFrom();
+		}
+		else if(type.equals("kilograms"))
+		{
+			int index = 3;
+			KilogramPound kp = new KilogramPound(items.get(index).getFromType(), items.get(index).getRate(), items.get(index).getToType());
+			amount = kp.getAmount(quantity);
+			toType = kp.getTo();
+			fromType = kp.getFrom();
+		}
+		else if(type.equals("milliliter"))
+		{
+			int index = 4;
+			MilliliterOunce mo = new MilliliterOunce(items.get(index).getFromType(), items.get(index).getRate(), items.get(index).getToType());
+			amount = mo.getAmount(quantity);
+			toType = mo.getTo();
+			fromType = mo.getFrom();
+		}
+		else
+		{
+			System.err.println("Unknown type");
+		}//END OF if/else
+	}//END OF Method
+
+	/**
+	 * Loads conversion data from file into array list as subclass objects
+	 * Measurement from, conversion rate and measurement to
+	 * Catches errors NumberFormatException, ArrayIndexOutOfBoundsException, and IOException
+	 * Runs sort function to alphabetize list
+	 */
+	public void loadItems()
+	{
+		int lineCount = 0;
+		try
+		{
+			Scanner infile = new Scanner(new FileInputStream(MASTERFILE));
+			
+			while(infile.hasNext() == true)
+			{
+				String line = infile.nextLine();
+				String[] list = line.split(",", 4);
+				
+				try
+				{
+					lineCount++;
+					if(list[0].equals("grams"))
+					{
+						items.add(new GramOunce(list[0], Double.parseDouble(list[1]), list[2]));
+					}
+					else if(list[0].equals("milliliters"))
+					{
+						items.add(new MilliliterOunce(list[0], Double.parseDouble(list[1]), list[2]));
+						//items.add(new Item(list[0], list[2], Double.parseDouble(list[1]), amount));
+					}
+					else if(list[0].equals("centimeters"))
+					{
+						items.add(new CentimeterInch(list[0], Double.parseDouble(list[1]), list[2]));
+						//items.add(new Item(list[0], list[2], Double.parseDouble(list[1]), amount));
+					}
+					else if(list[0].equals("celsius"))
+					{
+						items.add(new CelsiusFahrenheit(list[0], Double.parseDouble(list[1]), list[2]));
+						//items.add(new Item(list[0], list[2], Double.parseDouble(list[1]), amount));
+					}
+					else if(list[0].equals("kilograms"))
+					{
+						items.add(new KilogramPound(list[0], Double.parseDouble(list[1]), list[2]));
+						//items.add(new Item(list[0], list[2], Double.parseDouble(list[1]), amount));
+					}
+					else
+					{
+						System.err.printf("%s %d %s %s\n", "Invalid line. Line:", lineCount, "Text:", line);
+					}//END OF if/else
+					
+				}
+				catch(NumberFormatException e)
+				{
+					System.err.printf("%s %d %s %s\n", "Invalid line. Line:", lineCount, "Text:", line);
+				}//END OF catch		
+				catch(ArrayIndexOutOfBoundsException e)
+				{
+					System.err.printf("%s %d %s %s\n", "Invalid line. Line:", lineCount, "Text:", line);
+				}//END OF catch
+			}//END OF loop
+			infile.close();
+			Collections.sort(items);
+		}//END OF try
+		catch(IOException ex)
+		{
+			System.out.println("File not found");
+		}//END OF catch
+	}//END OF Method
+	
+	public String getToType()
+	{
+		return toType;
+	}//END OF Method
+	
+	public String getFromType()
+	{
+		return fromType;
+	}//END OF Method
+	
+	public double getQuantity()
+	{
+		return quantity;
+	}//END OF Method
+	
+	public String getItemType()
+	{
+		return itemType;
+	}//END OF Method
+	
+	public double getRate()
+	{
+		return rate;
+	}//END OF Method
+	
+	public double getAmount()
+	{
+		return amount;
+	}//END OF Method
+}//END OF Class

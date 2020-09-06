@@ -1,0 +1,269 @@
+package edu.tridenttech.cpt237.roeske.recipe.view;
+
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import edu.tridenttech.cpt237.roeske.recipe.model.Item;
+import edu.tridenttech.cpt237.roeske.recipe.model.Writer;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.VBox;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.stage.Stage;
+import javafx.util.Callback;
+
+/**
+ * ItemWindow UI for item measurements
+ * Connects to Item model class and Writer model class
+ *
+ */
+public class ItemWindow 
+{
+	public String from;
+	public String to;
+	public double rate;
+	private Stage stage;
+	Label nameLabel = new Label("Enter item name:");
+	Label quantLabel = new Label("Enter item quantity:");
+	private TextField itemName = new TextField();
+	private TextField itemQuantity = new TextField();
+	private RadioButton celsiusButton = new RadioButton("Celsius to Fahrenheit");
+	private RadioButton centimeterButton = new RadioButton("Centimeters to Inches");
+	private RadioButton gramButton = new RadioButton("Grams to Ounces");
+	private RadioButton kilogramButton = new RadioButton("Kilograms to Pounds");
+	private RadioButton milliliterButton = new RadioButton("Milliliters to Ounces");
+	private Button enterButton = new Button("Enter");
+	Button closeButton = new Button("Close");
+	private ToggleGroup radioGroup = new ToggleGroup();
+	private TableView<Item> table = new TableView<>();
+
+	/**
+	 * Constructor
+	 */
+	public ItemWindow()
+	{
+		/**
+		 * Sets radio buttons
+		 */
+		milliliterButton.setToggleGroup(radioGroup);
+		gramButton.setToggleGroup(radioGroup);
+		kilogramButton.setToggleGroup(radioGroup);
+		centimeterButton.setToggleGroup(radioGroup);
+		celsiusButton.setToggleGroup(radioGroup);
+
+		/**
+		 * Sets up TableView
+		 */
+		TableColumn<Item, String> nameCol = new TableColumn<>("Item Name");
+		nameCol.setCellValueFactory(new PropertyValueFactory<>("itemType"));
+		TableColumn<Item, String> fromCol = new TableColumn<>("From");
+		fromCol.setCellValueFactory(new PropertyValueFactory<>("fromType"));
+		TableColumn<Item, String> toCol = new TableColumn<>("To");
+		toCol.setCellValueFactory(new PropertyValueFactory<>("toType"));
+		TableColumn<Item, Double> amountCol = new TableColumn<>("End Amount");
+		amountCol.setCellValueFactory(new PropertyValueFactory<>("amount"));
+		TableColumn<Item, Double> quantCol = new TableColumn<>("Original Amount");
+		quantCol.setCellValueFactory(new PropertyValueFactory<>("quantity"));
+		/**
+		 * Formats table cell to 2-decimal doubles
+		 */
+		amountCol.setCellFactory(new Callback<TableColumn<Item, Double>, TableCell<Item, Double>>() {
+			public TableCell<Item, Double> call(TableColumn<Item, Double> p) {
+				TableCell<Item, Double> cell = new TableCell<Item, Double>(){
+					@Override
+					public void updateItem(Double item, boolean empty)
+					{
+						super.updateItem(item, empty);
+						setText(empty ? null : getString());
+						setGraphic(null);
+					}//END OF Method
+					private String getString()
+					{
+						String str = "";
+						if(getItem() != null)
+						{
+							String getitem = getItem().toString();
+							NumberFormat decimal = DecimalFormat.getInstance();
+							decimal.setMinimumFractionDigits(2);
+							decimal.setMaximumFractionDigits(2);
+							decimal.setRoundingMode(RoundingMode.UP);
+							str = decimal.format(Double.parseDouble(getitem));
+						}
+						else
+						{
+							str = "0.00";
+						}//END OF if/else
+						return str;
+					}//END OF Method
+				};
+			return cell;
+			}
+		});//END OF Inner Class
+		quantCol.setCellFactory(new Callback<TableColumn<Item, Double>, TableCell<Item, Double>>() {
+			public TableCell<Item, Double> call(TableColumn<Item, Double> p) {
+				TableCell<Item, Double> cell = new TableCell<Item, Double>(){
+					@Override
+					public void updateItem(Double item, boolean empty)
+					{
+						super.updateItem(item, empty);
+						setText(empty ? null : getString());
+						setGraphic(null);
+					}//END OF Method
+					private String getString()
+					{
+						String str = "";
+						if(getItem() != null)
+						{
+							String getitem = getItem().toString();
+							NumberFormat decimal = DecimalFormat.getInstance();
+							decimal.setMinimumFractionDigits(2);
+							decimal.setMaximumFractionDigits(2);
+							decimal.setRoundingMode(RoundingMode.UP);
+							str = decimal.format(Double.parseDouble(getitem));
+						}
+						else
+						{
+							str = "0.00";
+						}//END OF if/else
+						return str;
+					}//END OF Method
+				};
+			return cell;
+			}
+		});//END OF Inner Class
+		nameCol.setMinWidth(110);
+		fromCol.setMinWidth(110);
+		quantCol.setMinWidth(110);
+		toCol.setMinWidth(110);
+		amountCol.setMinWidth(110);
+
+		table.getColumns().add(nameCol);
+		table.getColumns().add(fromCol);
+		table.getColumns().add(quantCol);
+		table.getColumns().add(toCol);
+		table.getColumns().add(amountCol);
+
+
+		/**
+		 * Sets stage
+		 */
+		stage = new Stage();
+		VBox vbox = new VBox(10, milliliterButton, gramButton, kilogramButton, centimeterButton, celsiusButton, nameLabel, itemName, quantLabel, itemQuantity, enterButton, table, closeButton);
+		Scene scene = new Scene(vbox);
+		stage.setScene(scene);
+		stage.setWidth(570);
+	}//END OF Constructor
+	
+	/**
+	 * Show method
+	 * Loads Items, inner classes handle buttons
+	 * Catches NumberFormatExceptions
+	 * Alerts to null or invalid values
+	 * Calls item.convert
+	 * Writes file
+	 */
+	public void show()
+	{
+		Item item = new Item(from, rate, to);
+		Writer writer = new Writer();
+
+		item.loadItems();
+		stage.show();
+
+		enterButton.setOnAction(new EventHandler<ActionEvent>()
+		{
+			@Override
+			public void handle(ActionEvent event)
+			{
+				item.setName(itemName.getText());
+				try
+				{
+
+					item.setQuantity(Double.parseDouble(itemQuantity.getText()));
+				}//END OF try
+				catch(NumberFormatException e)
+				{
+					Alert alert = new Alert(AlertType.WARNING);
+					alert.setContentText("Quantity must be numeric value");
+					alert.show();
+				}//END OF catch
+
+				if(milliliterButton.isSelected() == true)
+				{
+					item.convert("milliliters");
+				}
+				else if(gramButton.isSelected() == true)
+				{
+					item.convert("grams");
+				}
+				else if(kilogramButton.isSelected() == true)
+				{
+					item.convert("kilograms");
+				}
+				else if(centimeterButton.isSelected() == true)
+				{
+					item.convert("centimeters");
+				}
+				else if(celsiusButton.isSelected() == true)
+				{
+					item.convert("celsius");
+				}
+				else
+				{
+					Alert alert = new Alert(AlertType.WARNING);
+					alert.setContentText("You must select a conversion");
+					alert.show();
+				}//END OF if/else
+				try
+				{
+					if(Double.parseDouble(itemQuantity.getText()) <= 0)
+					{
+						Alert alert = new Alert(AlertType.WARNING);
+						alert.setContentText("Amount must be greater than 0");
+						alert.show();
+					}
+					else if(itemName.getText().isEmpty())
+					{
+						Alert alert = new Alert(AlertType.WARNING);
+						alert.setContentText("You must enter an item name");
+						alert.show();
+					}
+					else
+					{
+						table.getItems().add(new Item(item.getItemType(), item.getFromType(), item.getQuantity(), item.getToType(), item.getAmount()));
+						writer.setWriteRecipe(item.getItemType(), item.getFromType(), item.getQuantity(), item.getToType(), item.getAmount());
+						itemQuantity.clear();
+						itemName.clear();
+					}//END OF if/else
+				}//END OF try
+				catch(NumberFormatException e)
+				{
+					System.err.println("non-numeric");
+				}//END OF catch
+
+			}//END OF Method
+			
+		});//END OF Inner Class
+		
+		closeButton.setOnAction(new EventHandler<ActionEvent>()
+		{
+			@Override
+			public void handle(ActionEvent event)
+			{
+				stage.close();
+			}//END OF Method
+		});//END OF Inner Class
+
+	}//END OF Method
+}//END OF Class

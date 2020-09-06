@@ -1,0 +1,18 @@
+package edu.tridenttech.cpt237.roeske.recipe.model;
+
+/**
+ * Interface conversion gives the basic methods needed to create a conversion scenario,
+ * a method that loads data, a method that converts, a to type, a from type, a conversion rate,
+ * an initial quantity and a final amount
+ *
+ */
+public interface Conversion
+{
+	void convert(String type);
+	void loadItems();
+	String getToType();
+	String getFromType();
+	double getAmount();
+	double getRate();
+	double getQuantity();
+}

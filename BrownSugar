@@ -53,4 +53,4 @@ public class BrownSugar extends Volume
 	{
 		return item;
 	}//END OF Method
-}//END OF Method
+}//END OF Class
